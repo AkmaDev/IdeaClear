@@ -7,6 +7,8 @@ const Anthropic = require("@anthropic-ai/sdk");
 const MAX_MESSAGES = 30; // garde-fou coût : longueur max d'une conversation
 const MODEL = "claude-sonnet-4-5";
 const MAX_TOKENS = 4096; // couvre les tours normaux et la génération des livrables
+const MAX_ESTIMATED_TOKENS = 60000; // pré-vérification grossière (~4 caractères/token) avant d'appeler l'API
+const MAX_CONVERSATION_TOKENS = 60000; // vérification exacte après appel, via l'usage renvoyé par l'API
 
 const SYSTEM_PROMPT = `Tu es IdeaClear, un assistant qui aide des personnes non-techniques à transformer une idée floue de projet (application, site, outil) en un projet clair et actionnable.
 
@@ -68,6 +70,16 @@ module.exports = async (req, res) => {
     return;
   }
 
+  // Pré-vérification grossière (avant d'appeler l'API) : protège même si un client
+  // envoie peu de messages mais très volumineux.
+  const estimatedTokens = messages.reduce((sum, m) => sum + (m.content || "").length, 0) / 4;
+  if (estimatedTokens > MAX_ESTIMATED_TOKENS) {
+    res.status(400).json({
+      error: "Cette conversation est trop volumineuse. Merci d'en relancer une nouvelle.",
+    });
+    return;
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     res.status(500).json({ error: "Configuration serveur incomplète (clé API manquante)." });
@@ -91,7 +103,25 @@ module.exports = async (req, res) => {
 
     const { reply, deliverables } = extractDeliverables(rawText);
 
-    res.status(200).json({ reply, deliverables });
+    const totalTokens = (completion.usage?.input_tokens || 0) + (completion.usage?.output_tokens || 0);
+    const limitReached = totalTokens > MAX_CONVERSATION_TOKENS;
+
+    // Capture pour amélioration ultérieure de la méthodologie : uniquement les conversations
+    // abouties (livrables générés), pas les échanges abandonnés en cours de route.
+    // Consultable via le MCP Vercel (get_runtime_logs) en filtrant sur "conversation_completed".
+    // Note : rétention des logs limitée par le plan Vercel.
+    if (deliverables) {
+      console.log(JSON.stringify({
+        event: "conversation_completed",
+        timestamp: new Date().toISOString(),
+        messageCount: messages.length,
+        totalTokens,
+        messages,
+        deliverables,
+      }));
+    }
+
+    res.status(200).json({ reply, deliverables, limitReached });
   } catch (err) {
     console.error("Erreur API Claude:", err);
     res.status(502).json({ error: "Erreur lors de l'appel à l'assistant. Réessayez." });

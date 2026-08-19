@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IdeaClear — Une idée floue. Un projet clair, en 10 minutes.</title>
+<meta name="description" content="IdeaClear discute avec vous pour transformer votre idée d'app ou de site en un cahier des charges structuré et un prompt prêt à coller dans Claude Code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f0e;
+    --panel: #101614;
+    --panel-border: #1c2621;
+    --text: #eef2f0;
+    --text-muted: #a9b6b0;
+    --text-dim: #7d8b85;
+    --text-faint: #5f6d67;
+    --green: #3ddc97;
+    --green-hover: #5be8ac;
+    --green-soft: #8fe0b8;
+    --blue: #4f9dff;
+    --blue-soft: #6fb8ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  ::selection { background: var(--green); color: #06110d; }
+  a { transition: color .15s ease, background .15s ease, border-color .15s ease; }
+  nav a.link:hover { color: var(--text) !important; }
+  nav a.cta-nav:hover, .cta-main:hover { background: var(--green-hover) !important; }
+  a.secondary:hover { border-color: var(--green) !important; }
+  @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulseDot { 0%,100% { opacity: .4; } 50% { opacity: 1; } }
+
+  .wrap { max-width: 1280px; margin: 0 auto; }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:24px 48px; max-width:1280px; margin:0 auto; }
+  nav .links { display:flex; align-items:center; gap:32px; }
+  nav a.link { color:#9aa8a2; text-decoration:none; font-size:14px; font-weight:500; }
+  nav a.cta-nav { background:var(--green); color:#06110d; padding:10px 20px; border-radius:8px; text-decoration:none; font-size:14px; font-weight:600; }
+
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo .mark { width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--green),var(--blue)); }
+  .logo span { font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px; letter-spacing:-0.02em; }
+
+  section.hero { max-width:1000px; margin:0 auto; padding:96px 48px 80px; text-align:center; position:relative; }
+  .hero-glow { position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:700px; height:400px; background:radial-gradient(ellipse at center, rgba(61,220,151,0.12), rgba(79,157,255,0.08) 45%, transparent 70%); filter:blur(20px); pointer-events:none; }
+  .badge { position:relative; display:inline-flex; align-items:center; gap:8px; background:#131b18; border:1px solid #223029; padding:6px 14px; border-radius:999px; font-size:13px; color:var(--green-soft); margin-bottom:28px; animation:fadeUp .6s ease both; }
+  .badge .dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulseDot 2s ease-in-out infinite; }
+  h1 { position:relative; font-family:'Space Grotesk',sans-serif; font-size:56px; line-height:1.08; font-weight:700; letter-spacing:-0.03em; margin:0 0 24px; animation:fadeUp .7s ease .05s both; }
+  h1 .gradient { background:linear-gradient(90deg,var(--green),var(--blue)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.lede { position:relative; font-size:19px; line-height:1.6; color:var(--text-muted); max-width:620px; margin:0 auto 40px; animation:fadeUp .7s ease .1s both; }
+  .hero p.lede strong { color:#dbe7e1; }
+  .hero-ctas { position:relative; display:flex; align-items:center; justify-content:center; gap:16px; animation:fadeUp .7s ease .15s both; }
+  .cta-main { background:var(--green); color:#06110d; padding:15px 28px; border-radius:10px; text-decoration:none; font-size:16px; font-weight:600; }
+  a.secondary { color:#dbe7e1; padding:15px 20px; text-decoration:none; font-size:15px; font-weight:500; border:1px solid #223029; border-radius:10px; }
+  .hero-sub { position:relative; font-size:13px; color:var(--text-faint); margin-top:20px; }
+
+  section.problem { max-width:1100px; margin:0 auto; padding:40px 48px 100px; }
+  .problem-card { background:var(--panel); border:1px solid var(--panel-border); border-radius:20px; padding:48px; display:grid; grid-template-columns:1.1fr 1fr; gap:48px; align-items:center; }
+  .eyebrow { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; }
+  .eyebrow.blue { color:var(--blue-soft); }
+  .eyebrow.green { color:var(--green-soft); }
+  .problem-card h2 { font-family:'Space Grotesk',sans-serif; font-size:30px; font-weight:600; line-height:1.25; margin:14px 0 16px; letter-spacing:-0.01em; }
+  .problem-card p { color:var(--text-muted); font-size:15.5px; line-height:1.65; margin:0; }
+  .blindspots { display:flex; flex-direction:column; gap:10px; }
+  .blindspot { display:flex; align-items:center; gap:14px; background:var(--bg); border:1px solid var(--panel-border); border-radius:12px; padding:14px 16px; }
+  .blindspot .icon { font-size:20px; line-height:1; }
+  .blindspot .label { font-size:14.5px; font-weight:600; color:#dbe7e1; }
+  .blindspot .desc { font-size:13px; color:var(--text-dim); }
+
+  section.flow { max-width:820px; margin:0 auto; padding:20px 48px 110px; }
+  .section-head { text-align:center; margin-bottom:48px; }
+  .section-head h2 { font-family:'Space Grotesk',sans-serif; font-size:34px; font-weight:600; margin:14px 0 0; letter-spacing:-0.01em; }
+  .section-head p { color:var(--text-muted); font-size:15.5px; margin:14px auto 0; max-width:520px; }
+  .chat-panel { background:var(--panel); border:1px solid var(--panel-border); border-radius:20px; padding:32px; display:flex; flex-direction:column; gap:18px; }
+  .msg-row { display:flex; flex-direction:column; gap:6px; }
+  .msg-row.user { align-items:flex-end; }
+  .msg-row.bot { align-items:flex-start; }
+  .bubble { max-width:78%; padding:13px 16px; font-size:14.5px; line-height:1.55; }
+  .bubble.user { border-radius:14px 14px 4px 14px; background:#1a2622; border:1px solid #26372f; color:#dbe7e1; }
+  .bubble.bot { border-radius:14px 14px 14px 4px; background:#182028; border:1px solid #1f2b35; color:#dbe7e1; }
+  .tag { font-size:11px; font-weight:600; color:var(--green-soft); background:rgba(61,220,151,0.1); border:1px solid rgba(61,220,151,0.3); border-radius:999px; padding:3px 10px; letter-spacing:0.02em; }
+
+  section.livrables { max-width:1100px; margin:0 auto; padding:20px 48px 110px; }
+  .livrables-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .livrable-card { background:var(--panel); border:1px solid var(--panel-border); border-radius:16px; padding:36px; display:flex; flex-direction:column; gap:16px; }
+  .livrable-card .icon-box { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; }
+  .livrable-card h3 { font-family:'Space Grotesk',sans-serif; font-size:21px; font-weight:600; margin:0; }
+  .livrable-card p { color:var(--text-muted); font-size:15px; line-height:1.6; margin:0; }
+  .livrable-card ul { margin:8px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .livrable-card li { display:flex; gap:8px; font-size:14px; color:#c3cec8; }
+
+  section.faq { max-width:760px; margin:0 auto; padding:20px 48px 110px; }
+  .faq-list { display:flex; flex-direction:column; gap:1px; background:var(--panel-border); border-radius:16px; overflow:hidden; border:1px solid var(--panel-border); }
+  .faq-item { background:var(--panel); }
+  .faq-item button { width:100%; display:flex; align-items:center; justify-content:space-between; padding:20px 24px; background:transparent; border:none; cursor:pointer; color:var(--text); font-size:15.5px; font-weight:500; text-align:left; font-family:'Inter',sans-serif; }
+  .faq-item .toggle-label { color:var(--green); font-size:18px; flex-shrink:0; margin-left:16px; }
+  .faq-item .answer { padding:0 24px 20px; color:var(--text-muted); font-size:14.5px; line-height:1.6; display:none; }
+  .faq-item.open .answer { display:block; }
+
+  section.cta-section { max-width:1000px; margin:0 auto; padding:20px 48px 120px; }
+  .cta-box { background:linear-gradient(135deg,#101a16,#0e1620); border:1px solid var(--panel-border); border-radius:24px; padding:64px 48px; text-align:center; position:relative; overflow:hidden; }
+  .cta-box .blob-a { position:absolute; top:-60px; right:-60px; width:280px; height:280px; background:radial-gradient(circle, rgba(61,220,151,0.15), transparent 70%); animation:floatY 6s ease-in-out infinite; }
+  .cta-box .blob-b { position:absolute; bottom:-80px; left:-40px; width:280px; height:280px; background:radial-gradient(circle, rgba(79,157,255,0.12), transparent 70%); animation:floatY 7s ease-in-out infinite reverse; }
+  .cta-box h2 { position:relative; font-family:'Space Grotesk',sans-serif; font-size:36px; font-weight:600; margin:0 0 16px; letter-spacing:-0.01em; }
+  .cta-box p { position:relative; color:var(--text-muted); font-size:16px; margin:0 0 32px; }
+  .cta-box a { position:relative; display:inline-block; }
+
+  footer { border-top:1px solid var(--panel-border); padding:32px 48px; }
+  footer .wrap { display:flex; align-items:center; justify-content:space-between; }
+  footer .logo .mark { width:20px; height:20px; }
+  footer .logo span { font-size:14px; }
+  footer .copyright { font-size:13px; color:var(--text-faint); }
+
+  @media (max-width: 760px) {
+    nav { padding:20px 24px; flex-wrap:wrap; gap:16px; }
+    nav .links { gap:16px; flex-wrap:wrap; }
+    section.hero { padding:64px 24px 56px; }
+    h1 { font-size:38px; }
+    .hero p.lede { font-size:17px; }
+    .hero-ctas { flex-direction:column; }
+    section.problem, section.flow, section.livrables, section.faq, section.cta-section { padding-left:24px; padding-right:24px; }
+    .problem-card { grid-template-columns:1fr; padding:28px; }
+    .livrables-grid { grid-template-columns:1fr; }
+    .cta-box { padding:44px 24px; }
+    footer .wrap { flex-direction:column; gap:12px; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="mark"></div>
+    <span>IdeaClear</span>
+  </div>
+  <div class="links">
+    <a class="link" href="#flow">Comment ça marche</a>
+    <a class="link" href="#livrables">Livrables</a>
+    <a class="link" href="#faq">FAQ</a>
+    <a class="cta-nav" href="#cta">Démarrer</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="badge"><span class="dot"></span>Aucun compte requis pour commencer</div>
+  <h1>Une idée floue.<br><span class="gradient">Un projet clair, en 10 minutes.</span></h1>
+  <p class="lede">IdeaClear discute avec vous, en langage simple, pour transformer votre idée d'app ou de site en un <strong>cahier des charges structuré</strong> — et repère à votre place les détails techniques qu'on oublie toujours de mentionner.</p>
+  <div class="hero-ctas">
+    <a class="cta-main" href="#cta">Décrire mon idée</a>
+    <a class="secondary" href="#flow">Voir comment ça marche</a>
+  </div>
+  <p class="hero-sub">Gratuit pour démarrer · Sans jargon technique · ~10 min de discussion guidée</p>
+</section>
+
+<section class="problem">
+  <div class="problem-card">
+    <div>
+      <span class="eyebrow blue">Le problème</span>
+      <h2>Ce qu'on ne pense pas à dire… c'est justement ce qui bloque le projet plus tard.</h2>
+      <p>Authentification, données sensibles, paiement, hébergement, maintenance : des questions évidentes pour un développeur, invisibles pour vous. IdeaClear les pose à votre place, au bon moment de la conversation, sans vous faire sentir perdu.</p>
+    </div>
+    <div class="blindspots" id="blindspots"></div>
+  </div>
+</section>
+
+<section class="flow" id="flow">
+  <div class="section-head">
+    <span class="eyebrow green">Le flux de conversation</span>
+    <h2>Une discussion, pas un formulaire</h2>
+    <p>Six moments clés, enchaînés naturellement, sans jamais vous demander un mot de vocabulaire technique.</p>
+  </div>
+  <div class="chat-panel" id="chatPanel"></div>
+</section>
+
+<section class="livrables" id="livrables">
+  <div class="section-head">
+    <span class="eyebrow blue">À la fin de la discussion</span>
+    <h2>Deux livrables prêts à l'emploi</h2>
+  </div>
+  <div class="livrables-grid">
+    <div class="livrable-card">
+      <div class="icon-box" style="background:rgba(79,157,255,0.12);">
+        <div style="width:18px; height:22px; border:2px solid #4f9dff; border-radius:2px; position:relative;">
+          <div style="position:absolute; top:5px; left:3px; width:8px; height:2px; background:#4f9dff;"></div>
+          <div style="position:absolute; top:9px; left:3px; width:8px; height:2px; background:#4f9dff;"></div>
+        </div>
+      </div>
+      <h3>Le cahier des charges</h3>
+      <p>Un document structuré et lisible : vision, utilisateurs, périmètre V1, contraintes techniques et non-techniques. De quoi cadrer le projet et en parler avec n'importe quel prestataire.</p>
+      <ul>
+        <li><span style="color:#4f9dff;">—</span>Objectifs et usage réel du produit</li>
+        <li><span style="color:#4f9dff;">—</span>Périmètre V1 vs évolutions futures</li>
+        <li><span style="color:#4f9dff;">—</span>Contraintes techniques identifiées</li>
+      </ul>
+    </div>
+    <div class="livrable-card">
+      <div class="icon-box" style="background:rgba(61,220,151,0.12);">
+        <div style="font-family:'Space Grotesk',monospace; font-size:16px; color:#3ddc97; font-weight:700;">&gt;_</div>
+      </div>
+      <h3>Le prompt prêt à coller</h3>
+      <p>Une version condensée et optimisée du cahier des charges, formatée pour être collée directement dans Claude Code et lancer le développement sans reformulation.</p>
+      <ul>
+        <li><span style="color:#3ddc97;">—</span>Formaté pour un agent de code</li>
+        <li><span style="color:#3ddc97;">—</span>Inclut les angles morts résolus</li>
+        <li><span style="color:#3ddc97;">—</span>Copiable en un clic</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="section-head">
+    <span class="eyebrow green">Questions fréquentes</span>
+    <h2>Vous vous demandez sûrement…</h2>
+  </div>
+  <div class="faq-list" id="faqList"></div>
+</section>
+
+<section class="cta-section" id="cta">
+  <div class="cta-box">
+    <div class="blob-a"></div>
+    <div class="blob-b"></div>
+    <h2>Prêt à transformer votre idée ?</h2>
+    <p>Dix minutes de discussion, un document clair, aucun compte à créer.</p>
+    <a class="cta-main" href="#">Lancer la discussion</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo">
+      <div class="mark"></div>
+      <span>IdeaClear</span>
+    </div>
+    <span class="copyright">© 2026 IdeaClear — De l'idée au cahier des charges.</span>
+  </div>
+</footer>
+
+<script>
+  const blindSpots = [
+    { icon: '🔒', label: 'Authentification', desc: 'Qui peut se connecter, et comment' },
+    { icon: '🛡️', label: 'Données sensibles', desc: 'Ce qui doit rester confidentiel' },
+    { icon: '💳', label: 'Paiement', desc: 'Facturation, abonnements, transactions' },
+    { icon: '☁️', label: 'Hébergement', desc: "Où et comment le projet va tourner" },
+    { icon: '🔧', label: 'Maintenance', desc: "Qui s'en occupe après le lancement" },
+  ];
+
+  const conversation = [
+    { who: 'user', text: "Je veux une appli pour que les gens de mon quartier échangent des objets qu'ils n'utilisent plus." },
+    { who: 'bot', text: "Bonne base ! Et concrètement, qui l'utilisera au quotidien : plutôt des voisins entre eux, ou aussi des commerçants ?" },
+    { who: 'user', text: "Surtout des particuliers, pour se prêter ou se donner des objets facilement." },
+    { who: 'bot', text: "Pour démarrer vite, on se concentre sur le prêt entre voisins. La mise en relation avec des pros, on la garde pour plus tard.", tag: 'Portée V1' },
+    { who: 'bot', text: "Question importante : les utilisateurs devront-ils créer un compte pour publier une annonce, et prévoyez-vous un jour de faire payer un service ?", tag: 'Angle mort technique' },
+    { who: 'user', text: "Ah… je n'y avais pas pensé. Oui, un compte simple je pense, et pas de paiement pour l'instant." },
+    { who: 'bot', text: "Noté. Un budget ou une deadline en tête pour ce projet ?", tag: 'Contraintes' },
+    { who: 'bot', text: "Pour résumer : une appli de prêt d'objets entre voisins, avec compte simple, sans paiement en V1. C'est bien ça ?", tag: 'Reformulation de contrôle' },
+  ];
+
+  const faqs = [
+    { q: "Est-ce gratuit pour démarrer ?", a: "Oui, la discussion et la génération de votre premier cahier des charges sont gratuites, sans carte bancaire ni compte à créer." },
+    { q: "Dois-je connaître le vocabulaire technique ?", a: "Non, c'est justement le principe : vous parlez de votre projet avec vos mots, IdeaClear traduit en éléments techniques structurés." },
+    { q: "Que se passe-t-il si je ne sais pas répondre à une question ?", a: "Vous pouvez répondre \"je ne sais pas\" ou \"à voir plus tard\" — l'assistant propose une option par défaut raisonnable et continue la conversation." },
+    { q: "Mes réponses et mon idée sont-elles confidentielles ?", a: "Oui, vos échanges ne sont utilisés que pour générer vos deux livrables et ne sont pas partagés." },
+    { q: "Le prompt généré fonctionne-t-il avec d'autres outils que Claude Code ?", a: "Il est optimisé pour Claude Code, mais reste un texte clair et structuré, réutilisable avec la plupart des assistants de développement." },
+    { q: "Combien de temps prend la discussion ?", a: "En général une dizaine de minutes, selon la complexité de votre idée et le niveau de détail que vous souhaitez donner." },
+  ];
+
+  // Render blind spots
+  const blindspotsEl = document.getElementById('blindspots');
+  blindSpots.forEach(b => {
+    const div = document.createElement('div');
+    div.className = 'blindspot';
+    div.innerHTML = `<span class="icon">${b.icon}</span><div><div class="label">${b.label}</div><div class="desc">${b.desc}</div></div>`;
+    blindspotsEl.appendChild(div);
+  });
+
+  // Render chat conversation
+  const chatPanelEl = document.getElementById('chatPanel');
+  conversation.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + (m.who === 'user' ? 'user' : 'bot');
+    const tagHtml = m.tag ? `<span class="tag">${m.tag}</span>` : '';
+    row.innerHTML = `${tagHtml}<div class="bubble ${m.who === 'user' ? 'user' : 'bot'}">${m.text}</div>`;
+    chatPanelEl.appendChild(row);
+  });
+
+  // Render FAQ accordion (single-open, first item open by default)
+  const faqListEl = document.getElementById('faqList');
+  let openIndex = 0;
+
+  function renderFaq() {
+    faqListEl.innerHTML = '';
+    faqs.forEach((f, i) => {
+      const isOpen = i === openIndex;
+      const item = document.createElement('div');
+      item.className = 'faq-item' + (isOpen ? ' open' : '');
+      item.innerHTML = `
+        <button type="button" aria-expanded="${isOpen}">
+          <span>${f.q}</span>
+          <span class="toggle-label">${isOpen ? '−' : '+'}</span>
+        </button>
+        <div class="answer">${f.a}</div>
+      `;
+      item.querySelector('button').addEventListener('click', () => {
+        openIndex = isOpen ? -1 : i;
+        renderFaq();
+      });
+      faqListEl.appendChild(item);
+    });
+  }
+  renderFaq();
+</script>
+
+</body>
+</html>

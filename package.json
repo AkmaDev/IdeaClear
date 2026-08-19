@@ -1,0 +1,9 @@
+{
+  "name": "ideaclear",
+  "version": "0.1.0",
+  "private": true,
+  "description": "IdeaClear — assistant conversationnel qui transforme une idée floue en cahier des charges et prompt prêt à coller dans Claude Code.",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1"
+  }
+}
